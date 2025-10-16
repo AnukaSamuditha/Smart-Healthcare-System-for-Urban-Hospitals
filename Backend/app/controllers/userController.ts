@@ -6,7 +6,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { username, email, password, profilePicture, role } = req.body;
+    const { username, email, password, type } = req.body;
+
+   if(!email || !username || !password || !type){
+      res.status(400).json({
+        message : "Missing required information"
+      })
+      return;
+    }
 
     const emailCheck = await User.findOne({ email });
     if (emailCheck) {
@@ -16,11 +23,13 @@ const createUser = async (req: Request, res: Response) => {
       return;
     }
 
+    const profilePicture = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(username)}`
+
     const newUser = new User({
       username,
       email,
       profilePicture,
-      role,
+      role : type,
     });
 
     const salt = await bcrypt.genSalt(10);

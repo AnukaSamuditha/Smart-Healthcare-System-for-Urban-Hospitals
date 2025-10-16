@@ -5,8 +5,9 @@ import mongoose, {
 } from "mongoose";
 
 export enum UserRoles {
-  REGULAR = "regular",
-  SELLER = "seller",
+  PATIENT = "patient",
+  DOCTOR = "doctor",
+  ADMIN = "admin"
 }
 
 export interface IUser extends Document {
@@ -14,6 +15,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRoles;
+  profilePicture : string
 }
 
 const userSchema: Schema<IUser> = new Schema<IUser>(
@@ -34,8 +36,12 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     role: {
       type: String,
       enum: Object.values(UserRoles),
-      default: UserRoles.REGULAR,
+      default: UserRoles.PATIENT,
     },
+    profilePicture : {
+      type : String,
+      required : false
+    }
   },
   { timestamps: true },
 );
