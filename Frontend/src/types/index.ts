@@ -28,3 +28,14 @@ export type SubmitButtonProps = {
   isValid?: boolean;
   icon?: any;
 };
+
+export type User = {
+  _id: string;
+  username: string;
+  email: string;
+  profilePicture: string;
+  role: "patient" | "doctor" | "admin";
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
