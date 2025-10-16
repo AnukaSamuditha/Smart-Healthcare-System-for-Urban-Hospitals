@@ -10,6 +10,10 @@ import "@/index.css";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import SignIn from "@/pages/auth/Signin";
 import SignUp from "@/pages/auth/Signup";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
+import MyHospitals from "./pages/dashboard/doctor/myHospitals";
+import AddHospital from "./pages/dashboard/doctor/addHospital";
+import { SidebarProvider } from "./components/ui/sidebar";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +25,18 @@ const router = createBrowserRouter(
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="signin" element={<SignIn />} />
         <Route path="signup" element={<SignUp />} />
+      </Route>
+
+      <Route
+        path="/dashboard"
+        element={
+          <SidebarProvider>
+            <DashboardLayout />
+          </SidebarProvider>
+        }
+      >
+        <Route path="my-hospitals" element={<MyHospitals />} />
+        <Route path="add-hospital" element={<AddHospital />} />
       </Route>
     </>
   )
