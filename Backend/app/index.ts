@@ -3,7 +3,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from '#routes/userRoutes.js';
-import scheduleRoutes from '#routes/scheduleRoute.js'
+import scheduleRoutes from '#routes/scheduleRoute.js';
+import bookingRoutes from "#routes/bookingRoutes.js";
 const port = process.env.PORT ?? 5000;
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(
 
 app.use("/users",userRoutes);
 app.use("/schedules",scheduleRoutes);
+app.use("/booking", bookingRoutes);
 
 await connectDB()
   .then(() => {
