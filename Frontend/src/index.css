@@ -123,3 +123,7 @@
     @apply bg-background text-foreground;
   }
 }
+td,th{
+    padding-left: 20px;
+    padding-right: 20px;
+}

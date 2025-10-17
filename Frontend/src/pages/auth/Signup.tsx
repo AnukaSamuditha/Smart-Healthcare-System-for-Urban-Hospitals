@@ -41,7 +41,7 @@ export default function SignUp() {
 
   const { mutate } = useMutation({
     mutationFn: async (data) => {
-      const res = await axiosInstance.post(`/users`, data);
+      const res = await axiosInstance.post(`/users/signup`, data);
       return res;
     },
     onSuccess: (res) => {

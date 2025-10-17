@@ -10,6 +10,9 @@ import "@/index.css";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import SignIn from "@/pages/auth/Signin";
 import SignUp from "@/pages/auth/Signup";
+import HealthDashboard from "@/pages/HealthDashboard/HealthDashboard.tsx";
+import PatientRegistration from "@/pages/PatientRegistrationSystem/PatientRegistration.tsx";
+import PatientVisitManagement from "@/pages/PatientVisitManagement/PatientVisitManagement.tsx";
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import MyHospitals from "./pages/dashboard/doctor/myHospitals";
 import AddHospital from "./pages/dashboard/doctor/addHospital";
@@ -26,6 +29,9 @@ const router = createBrowserRouter(
     <>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="reports" element={<HealthDashboard />} />
+          <Route path="registration" element={<PatientRegistration/>}/>
+          <Route path="management" element={<PatientVisitManagement/>}/>
       </Route>
 
       <Route path="/auth" element={<AuthLayout />}>
