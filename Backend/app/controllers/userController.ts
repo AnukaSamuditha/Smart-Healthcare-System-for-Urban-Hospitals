@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import User from "#models/User.js";
+import User, { UserRoles } from "#models/User.js";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import Doctor from "#models/Doctor.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { username, email, password, type } = req.body;
+    const { username, email, password, role } = req.body;
 
-   if(!email || !username || !password || !type){
+   if(!email || !username || !password || !role){
       res.status(400).json({
         message : "Missing required information"
       })
@@ -23,14 +24,25 @@ const createUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const profilePicture = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(username)}`
+    const profilePicture = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(username)}`;
 
-    const newUser = new User({
+    let newUser;
+
+    if(role === UserRoles.DOCTOR){
+      newUser = new Doctor({
       username,
       email,
       profilePicture,
-      role : type,
+      role,
     });
+    }else{
+      newUser = new User({
+      username,
+      email,
+      profilePicture,
+      role,
+    });
+    }
 
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(password, salt);
@@ -139,6 +151,7 @@ const loginUser = async (req: Request, res: Response) => {
           data: {
             id: user._id,
             email: user.email,
+            role : user.role
           },
         });
       },

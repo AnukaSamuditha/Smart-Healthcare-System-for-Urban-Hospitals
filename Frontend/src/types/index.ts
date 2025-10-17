@@ -28,3 +28,36 @@ export type SubmitButtonProps = {
   isValid?: boolean;
   icon?: any;
 };
+
+export type User = {
+  _id: string;
+  username: string;
+  email: string;
+  profilePicture: string;
+  role: "patient" | "doctor" | "admin";
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+export type Slot = {
+  start: string;
+  end: string;
+}
+
+export type DaySlots ={
+  date: string;
+  slots: Slot[];
+}
+
+export type ScheduleType = {
+  title: string;
+  description: string;
+  recurring: "monthly" | "weekly";
+  dateRange: { from: Date; to: Date };
+  weekRange: { from: Date; to: Date };
+  openTime: string;
+  closeTime: string;
+  noOfSlots: number;
+  duration: number;
+};

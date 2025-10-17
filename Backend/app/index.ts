@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import userRoutes from '#routes/userRoutes.js';
 import patientRoute from "#routes/patientRoute.js";
 import managementRoute from "#routes/managementRoute.js";
+import scheduleRoutes from '#routes/scheduleRoute.js';
+import bookingRoutes from "#routes/bookingRoutes.js";
 const port = process.env.PORT ?? 5000;
 const app = express();
 
@@ -23,6 +25,8 @@ app.use("/users",userRoutes);
 app.use("/patient",patientRoute);
 app.use("/management",managementRoute);
 
+app.use("/schedules",scheduleRoutes);
+app.use("/booking", bookingRoutes);
 
 await connectDB()
   .then(() => {

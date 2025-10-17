@@ -41,7 +41,7 @@ export default function SignIn() {
       console.log("User were logged in sucessfully", res);
       reset();
       queryClient.invalidateQueries({queryKey:["user_self",res.data]})
-      redirectedFrom ? navigate(redirectedFrom) : navigate("/");
+      redirectedFrom ? navigate(redirectedFrom) : (res?.data?.role === "doctor" ? navigate("/dashboard") : navigate("/"));
       
     },
     onError: (error) => {

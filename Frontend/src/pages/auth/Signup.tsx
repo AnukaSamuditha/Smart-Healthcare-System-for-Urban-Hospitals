@@ -25,7 +25,7 @@ const schema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password cannot be more than 16 characters"),
-  type: z.enum(["patient", "doctor"]).default("patient"),
+  role: z.enum(["patient", "doctor"]).default("patient"),
 });
 
 export default function SignUp() {
@@ -107,9 +107,9 @@ export default function SignUp() {
         </div>
 
         <div className="w-full flex flex-col gap-1">
-          <Label name="type" title="Type" />
+          <Label name="Type" title="Type" />
           <Controller
-            name="type"
+            name="role"
             control={control}
             render={({ field }) => (
               <>
@@ -122,9 +122,9 @@ export default function SignUp() {
                     <SelectItem value="doctor">Doctor</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.type && (
+                {errors.role && (
                   <small className="text-xs text-red-600 font-medium">
-                    {errors.type.message}
+                    {errors.role.message}
                   </small>
                 )}
               </>
