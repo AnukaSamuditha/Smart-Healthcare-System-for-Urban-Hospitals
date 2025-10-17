@@ -35,7 +35,7 @@ const router = createBrowserRouter(
           </SidebarProvider>
         }
       >
-        <Route path="my-hospitals" element={<MyHospitals />} />
+        <Route index element={<MyHospitals />} />
         <Route path="add-hospital" element={<AddHospital />} />
       </Route>
     </>

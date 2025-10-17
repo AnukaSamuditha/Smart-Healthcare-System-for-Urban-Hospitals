@@ -15,48 +15,57 @@ import type { ScheduleType } from "@/types";
 import SubmitButton from "@/components/SubmitButton";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/providers/axios";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import processSchedule from "@/utils/processSchedule";
 import { Eraser } from "lucide-react";
-import HospitalImage from '@/assets/hospital.png';
+import HospitalImage from "@/assets/hospital.png";
+import usePageTitle from "@/providers/usePageTitle";
+import { toast } from "sonner";
 
 export default function AddHospital() {
-  const { register, handleSubmit, reset, control, watch } =
-    useForm<ScheduleType>({
-      defaultValues: {
-        title: "",
-        description: "",
-        recurring: "monthly",
-        dateRange: {
-          from: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate()
-          ),
-          to: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth() + 1,
-            new Date().getDate()
-          ),
-        },
-        weekRange: {
-          from: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate()
-          ),
-          to: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate() + 7
-          ),
-        },
-        openTime: "10:00",
-        closeTime: "17:00",
-        noOfSlots: 0,
-        duration: 30,
+  usePageTitle("Add Schedule");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    formState: { isValid },
+  } = useForm<ScheduleType>({
+    defaultValues: {
+      title: "",
+      description: "",
+      recurring: "monthly",
+      dateRange: {
+        from: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate()
+        ),
+        to: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth() + 1,
+          new Date().getDate()
+        ),
       },
-    });
+      weekRange: {
+        from: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate()
+        ),
+        to: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate() + 7
+        ),
+      },
+      openTime: "10:00",
+      closeTime: "17:00",
+      noOfSlots: 0,
+      duration: 30,
+    },
+  });
 
   const [recurring, setRecurring] = useState<string>("monthly");
   const [selectedHospitalImage, setSelectedHospitalImage] =
@@ -66,8 +75,6 @@ export default function AddHospital() {
   );
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const propertyID = location.state?.propertyID;
 
   const onHospitalSelect = (hospitalID: string) => {
     const selectedHospital = hospitalData?.find(
@@ -83,23 +90,55 @@ export default function AddHospital() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: any) => {
-      const res = await axiosInstance.post("/schedules", data);
+      try {
+        const res = await axiosInstance.post("/schedules", data);
 
-      return res;
+        return res.data;
+      } catch (error) {
+        throw error;
+      }
     },
     onSuccess: (data) => {
       console.log("Schedule created successfully", data);
-      navigate(`${data.data.schedule._id}`, { state: { propertyID } });
+      toast.success("Schedule created successfully", {
+        description: `${new Date().toLocaleDateString("en-US", {
+          weekday: "long",
+        })}, ${new Date().toLocaleDateString("en-US", { month: "long" })} 
+        ${new Date().getDay()} at ${new Date().toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        })}
+        `,
+      });
+      navigate("/my-hospitals");
       reset();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log("Error occurred in creating schedule! ", error);
+
+      if (error?.response) {
+        if (error?.response?.status === 409) {
+          toast.error("Schedule Conflict Occurred!", {
+            description: `${new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+            })}, ${new Date().toLocaleDateString("en-US", { month: "long" })} 
+        ${new Date().getDay()} at ${new Date().toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+        `,
+          });
+        }
+      }
     },
   });
 
   const onSubmit = (formData: any) => {
     const startTime = watch("openTime");
     const endTime = watch("closeTime");
+    const hospitalName = hospitalData.find(
+      (hospital) => hospital.id === Number(selectedHospital)
+    )?.name;
     const range =
       recurring === "weekly" ? formData.weekRange : formData.dateRange;
     const result = processSchedule(
@@ -111,9 +150,10 @@ export default function AddHospital() {
     );
     if (result.length > 0) {
       const data = {
-        propertyId: selectedHospital,
+        hospitalID: selectedHospital,
+        hospitalName,
         slots: result,
-        name: formData.title,
+        title: formData.title,
         description: formData.description,
         duration: Number(formData.duration),
         noOfSlots: Number(formData.noOfSlots),
@@ -318,13 +358,14 @@ export default function AddHospital() {
           <div className="w-full flex justify-start items-center gap-6">
             <div>
               <button className="className={`w-full text-sm font-medium rounded-[8px] h-[2.5rem] cursor-pointer flex justify-center items-center gap-2 px-4 py-2">
-                <Eraser color="black" size={18}/>Clear
+                <Eraser color="black" size={18} />
+                Clear
               </button>
             </div>
-            <div className="w-[20%]">
+            <div className="w-[30%]">
               <SubmitButton
                 title="Create schedule"
-                isValid={true}
+                isValid={isValid}
                 isSubmitting={isPending}
               />
             </div>
