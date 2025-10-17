@@ -39,3 +39,25 @@ export type User = {
   updatedAt: string;
   __v: number;
 };
+
+export type Slot = {
+  start: string;
+  end: string;
+}
+
+export type DaySlots ={
+  date: string;
+  slots: Slot[];
+}
+
+export type ScheduleType = {
+  title: string;
+  description: string;
+  recurring: "monthly" | "weekly";
+  dateRange: { from: Date; to: Date };
+  weekRange: { from: Date; to: Date };
+  openTime: string;
+  closeTime: string;
+  noOfSlots: number;
+  duration: number;
+};

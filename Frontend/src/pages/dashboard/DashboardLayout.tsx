@@ -20,7 +20,6 @@ export default function DashboardLayout() {
   return (
     <>
       <AppSidebar />
-
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -33,15 +32,15 @@ export default function DashboardLayout() {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
-                    {mainRoute.charAt(0).toUpperCase() +
-                      mainRoute.slice(1).toLowerCase()}
+                    {mainRoute?.charAt(0)?.toUpperCase() +
+                      mainRoute?.slice(1)?.toLowerCase()}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
                   <BreadcrumbPage>
-                    {subRoute.charAt(0).toUpperCase() +
-                      subRoute.slice(1).toLowerCase()}
+                    {subRoute?.charAt(0)?.toUpperCase() +
+                      subRoute?.slice(1)?.toLowerCase()}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>

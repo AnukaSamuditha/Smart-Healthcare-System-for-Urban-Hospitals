@@ -46,7 +46,7 @@ export const hospitalNav = [
     items: [
       {
         title: "My hospitals",
-        url: "/dashboard/my-hospitals",
+        url: ".",
       },
       {
         title: "Add hospital",
