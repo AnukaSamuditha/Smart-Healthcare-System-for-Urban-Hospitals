@@ -1,18 +1,50 @@
-import {
-    Cake,
-    Calendar, ChartBar, Check,
-    ClipboardList,
-    FileEdit,
-    House,
-    Phone,
-    Pin,
-    QrCode,
-    Search,
-    Stethoscope,
-    User
-} from "lucide-react";
+import {Cake, Calendar, ChartBar, Check, ClipboardList, FileEdit, House, Phone, Pin, QrCode, Search, Stethoscope, User} from "lucide-react";
+import axiosInstance from "@/providers/axios.ts";
+import {useMutation} from "@tanstack/react-query";
+import {useState} from "react";
 
 export default function PatientVisitManagement(){
+
+    const [form, setForm] = useState({
+        fullName: "",
+        phone: "",
+        nic: "",
+    });
+
+    const [patientData, setPatientData] = useState<any>(null);
+
+    const mutation = useMutation({
+        mutationFn: async (data: typeof form) => {
+            const [fname, lname] = data.fullName.split(" ");
+            const payload = { nic: data.nic, fname, lname, phone: data.phone };
+            const res = await axiosInstance.post("/management/check", payload, { withCredentials: true });
+            return res.data;
+        },
+        onSuccess: (data) => {
+            setPatientData(data.patient);
+        },
+        onError: (err: any) => {
+            alert(err.response?.data?.message || "Patient not found");
+            setPatientData(null);
+        },
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        mutation.mutate(form);
+    };
+
+    console.log(patientData)
+
+
+
+
+
     return(
         <div className="h-[180vh] flex justify-center items-center bg-gray-300">
             <div className="w-[90vw] h-[95%] flex flex-col justify-start items-center gap-2">
@@ -48,8 +80,8 @@ export default function PatientVisitManagement(){
                             <div className="w-full h-[25%] flex justify-center items-center ">
                                 <div className="w-full h-full flex justify-center items-center flex-col rounded-lg bg-gray-100 border border">
                                     <div className="w-full h-[30%] flex justify-between items-center px-5">
-                                        <div className="text-[18px] font-bold">Dinuka Lakmal</div>
-                                        <div className="bg-blue-400 text-white px-5 py-2 text-[12px] font-bold rounded-full">234567</div>
+                                        <div className="text-[18px] font-bold">{patientData?.fname} {patientData?.lname}</div>
+                                        <div className="bg-blue-400 text-white px-5 py-2 text-[12px] font-bold rounded-full">{patientData?.nic}</div>
                                     </div>
                                     <div className="w-full h-[70%] grid grid-cols-2 text-[14px]">
                                         <div className="flex flex-row justify-center items-center gap-2">
@@ -58,19 +90,19 @@ export default function PatientVisitManagement(){
                                         </div>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <Phone size={20}/>
-                                            <div>+94779876543</div>
+                                            <div>{patientData?.phone}</div>
                                         </div>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <House size={20}/>
-                                            <div>123 Kandy Road</div>
+                                            <div>{patientData?.address}</div>
                                         </div>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <Pin size={20}/>
-                                            <div>Colombo 07</div>
+                                            <div>{patientData?.city}</div>
                                         </div>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <Calendar size={20}/>
-                                            <div>Last Visit:15/07/2025</div>
+                                            <div>Last Visit: {patientData ? new Date(patientData.createdAt).toLocaleDateString() : "N/A"}</div>
                                         </div>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <Stethoscope size={20}/>
@@ -82,22 +114,47 @@ export default function PatientVisitManagement(){
                             </div>
                             <div className="w-full h-[45%] flex justify-center items-center">
                                 <div className="w-full h-full flex justify-around items-center flex-col rounded-lg bg-gray-100 border border-dashed p-2">
-                                    <h1>Manual Verfication (If QR Code is not available)</h1>
-                                    <div className="flex w-full flex-col justify-center items-start ">
-                                        <label className="text-[12px] text-gray-500">Patient Id Or Full Name</label>
-                                        <input type="text" placeholder="Enter Patient ID or Full Name" className="w-full h-[40px] border rounded-md p-2 bg-white"/>
-                                    </div>
-                                    <div className="flex w-full flex-col justify-center items-start ">
-                                        <label className="text-[12px] text-gray-500">Phone Number</label>
-                                        <input type="tel" placeholder="Enter Phone Number" className="w-full h-[40px] border rounded-md p-2 bg-white"/>
-                                    </div>
-                                    <div className="flex w-full flex-col justify-center items-start">
-                                        <label className="text-[12px] text-gray-500">Date Of Birth</label>
-                                        <input type="date" className="w-full h-[40px] border rounded-md p-2 text-gray-400 bg-white"/>
-                                    </div>
-                                    <div className="flex w-full flex-col justify-center items-start ">
-                                        <button className="bg-blue-400 w-full py-2 text-white rounded-md">Verify Manuelly</button>
-                                    </div>
+                                    <h1>Manual Verification (If QR Code is not available)</h1>
+                                    <form className="w-full flex flex-col gap-2" onSubmit={handleSubmit}>
+                                        <div className="flex w-full flex-col justify-center items-start">
+                                            <label className="text-[12px] text-gray-500">Full Name</label>
+                                            <input
+                                                type="text"
+                                                name="fullName"
+                                                placeholder="Enter Patient ID or Full Name"
+                                                value={form.fullName}
+                                                onChange={handleChange}
+                                                className="w-full h-[40px] border rounded-md p-2 bg-white"
+                                            />
+                                        </div>
+                                        <div className="flex w-full flex-col justify-center items-start">
+                                            <label className="text-[12px] text-gray-500">Phone Number</label>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                placeholder="Enter Phone Number"
+                                                value={form.phone}
+                                                onChange={handleChange}
+                                                className="w-full h-[40px] border rounded-md p-2 bg-white"
+                                            />
+                                        </div>
+                                        <div className="flex w-full flex-col justify-center items-start">
+                                            <label className="text-[12px] text-gray-500">NIC</label>
+                                            <input
+                                                type="text"
+                                                name="nic"
+                                                placeholder="Enter NIC"
+                                                value={form.nic}
+                                                onChange={handleChange}
+                                                className="w-full h-[40px] border rounded-md p-2 bg-white"
+                                            />
+                                        </div>
+                                        <div className="flex w-full flex-col justify-center items-start">
+                                            <button type="submit" className="bg-blue-400 w-full py-2 text-white rounded-md">
+                                                Verify Manually
+                                            </button>
+                                        </div>
+                                    </form>
 
                                 </div>
                             </div>

@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from '#routes/userRoutes.js';
 import patientRoute from "#routes/patientRoute.js";
+import managementRoute from "#routes/managementRoute.js";
 const port = process.env.PORT ?? 5000;
 const app = express();
 
@@ -20,9 +21,8 @@ app.use(
 
 app.use("/users",userRoutes);
 app.use("/patient",patientRoute);
-app.use("/test",(req,res)=>{
-    res.json({message:"Test route"})
-})
+app.use("/management",managementRoute);
+
 
 await connectDB()
   .then(() => {

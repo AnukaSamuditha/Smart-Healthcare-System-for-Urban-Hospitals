@@ -56,7 +56,6 @@ export const getPatient = async (req: Request, res: Response) => {
     }
 };
 
-// Get all patients (admin or doctor access can be added later)
 export const getAllPatients = async (req: Request, res: Response) => {
     try {
         const patients = await Patient.find().select("-password");
